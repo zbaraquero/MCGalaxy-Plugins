@@ -11,12 +11,15 @@ namespace MCGalaxy
         public override string name { get { return "LogicGates"; } }
         public override string MCGalaxy_Version { get { return "1.9.5.3"; } }
         public override string creator { get { return "Nvzhnn"; } }
-        public override bool LoadAtStartup { get { return true; } }
 
         static BlockID on = 155;    // oDoor_Green
         static BlockID off = 177;    // oDoor_Red
-        static BlockID NOTGateBlock = Block.Orange;
-        static BlockID ANDGateBlock = Block.Lime;
+        static BlockID NOTGateBlock = 31;
+        static BlockID ANDGateBlock = 32;
+        static BlockID ORGateBlock = 33;
+        static BlockID NANDGateBlock = 34;
+        static BlockID NORGateBlock = 35;
+        static BlockID XORGateBlock = 36;
 
         public override void Load(bool startup)
         {
@@ -32,48 +35,114 @@ namespace MCGalaxy
         {
             switch (block)
             {
-                case Block.Orange:
+                case 31:
                     lvl.PhysicsHandlers[NOTGateBlock] = TriggerNOT;
                     break;
-                case Block.Lime:
+                case 32:
                     lvl.PhysicsHandlers[ANDGateBlock] = TriggerAND;
+                    break;
+                case 33:
+                    lvl.PhysicsHandlers[ORGateBlock] = TriggerOR;
+                    break;
+                case 34:
+                    lvl.PhysicsHandlers[NANDGateBlock] = TriggerNAND;
+                    break;
+                case 35:
+                    lvl.PhysicsHandlers[NORGateBlock] = TriggerNOR;
+                    break;
+                case 36:
+                    lvl.PhysicsHandlers[XORGateBlock] = TriggerXOR;
                     break;
                 default:
                     return;
             }
         }
-        
+
         static void TriggerNOT(Level lvl, ref PhysInfo C)
         {
             ushort x = C.X, y = C.Y, z = C.Z;
+            BlockID input1 = lvl.GetBlock((ushort)(x - 1), y, z);
+            BlockID input2 = lvl.GetBlock((ushort)(x + 1), y, z);
+            BlockID input3 = lvl.GetBlock(x, y, (ushort)(z - 1));
+            BlockID input4 = lvl.GetBlock(x, y, (ushort)(z + 1));
 
-            BlockID input = lvl.GetBlock((ushort)(x + 1), y, z);
-
-            if (input == off)
-            {
+            if (input1 == off || input2 == off || input3 == off || input4 == off)
                 lvl.Blockchange(x, (ushort)(y + 1), z, on);
-            }
-            else if (input == on)
-            {
+            else
                 lvl.Blockchange(x, (ushort)(y + 1), z, off);
-            }
         }
 
         static void TriggerAND(Level lvl, ref PhysInfo C)
         {
             ushort x = C.X, y = C.Y, z = C.Z;
+            BlockID input1 = lvl.GetBlock((ushort)(x - 1), y, z);
+            BlockID input2 = lvl.GetBlock((ushort)(x + 1), y, z);
+            BlockID input3 = lvl.GetBlock(x, y, (ushort)(z - 1));
+            BlockID input4 = lvl.GetBlock(x, y, (ushort)(z + 1));
 
-            BlockID inputA = lvl.GetBlock((ushort)(x - 1), y, z);
-            BlockID inputB = lvl.GetBlock((ushort)(x + 1), y, z);
-
-            if ((inputA == off && inputB == off) || (inputA == off && inputB == on) || (inputA == on && inputB == off))
-            {
+            if (input1 == off || input2 == off || input3 == off || input4 == off)
                 lvl.Blockchange(x, (ushort)(y + 1), z, off);
-            }
-            else if (inputA == on && inputB == on)
-            {
+            else
                 lvl.Blockchange(x, (ushort)(y + 1), z, on);
-            }
+        }
+
+        static void TriggerOR(Level lvl, ref PhysInfo C)
+        {
+            ushort x = C.X, y = C.Y, z = C.Z;
+            BlockID input1 = lvl.GetBlock((ushort)(x - 1), y, z);
+            BlockID input2 = lvl.GetBlock((ushort)(x + 1), y, z);
+            BlockID input3 = lvl.GetBlock(x, y, (ushort)(z - 1));
+            BlockID input4 = lvl.GetBlock(x, y, (ushort)(z + 1));
+
+            if (input1 == on || input2 == on || input3 == on || input4 == on)
+                lvl.Blockchange(x, (ushort)(y + 1), z, on);
+            else
+                lvl.Blockchange(x, (ushort)(y + 1), z, off);
+        }
+
+        static void TriggerNAND(Level lvl, ref PhysInfo C)
+        {
+            ushort x = C.X, y = C.Y, z = C.Z;
+            BlockID input1 = lvl.GetBlock((ushort)(x - 1), y, z);
+            BlockID input2 = lvl.GetBlock((ushort)(x + 1), y, z);
+            BlockID input3 = lvl.GetBlock(x, y, (ushort)(z - 1));
+            BlockID input4 = lvl.GetBlock(x, y, (ushort)(z + 1));
+
+            if (!(input1 == off || input2 == off || input3 == off || input4 == off))
+                lvl.Blockchange(x, (ushort)(y + 1), z, off);
+            else
+                lvl.Blockchange(x, (ushort)(y + 1), z, on);
+        }
+
+        static void TriggerNOR(Level lvl, ref PhysInfo C)
+        {
+            ushort x = C.X, y = C.Y, z = C.Z;
+            BlockID input1 = lvl.GetBlock((ushort)(x - 1), y, z);
+            BlockID input2 = lvl.GetBlock((ushort)(x + 1), y, z);
+            BlockID input3 = lvl.GetBlock(x, y, (ushort)(z - 1));
+            BlockID input4 = lvl.GetBlock(x, y, (ushort)(z + 1));
+
+            if (!(input1 == on || input2 == on || input3 == on || input4 == on))
+                lvl.Blockchange(x, (ushort)(y + 1), z, on);
+            else
+                lvl.Blockchange(x, (ushort)(y + 1), z, off);
+        }
+
+        static void TriggerXOR(Level lvl, ref PhysInfo C)
+        {
+            ushort x = C.X, y = C.Y, z = C.Z;
+            BlockID input1 = lvl.GetBlock((ushort)(x - 1), y, z);
+            BlockID input2 = lvl.GetBlock((ushort)(x + 1), y, z);
+            BlockID input3 = lvl.GetBlock(x, y, (ushort)(z - 1));
+            BlockID input4 = lvl.GetBlock(x, y, (ushort)(z + 1));
+
+            if ((input1 == on && input2 == off) || (input1 == on && input3 == off) || (input1 == on && input4 == off) ||
+                (input2 == on && input1 == off) || (input2 == on && input3 == off) || (input2 == on && input4 == off) ||
+                (input3 == on && input1 == off) || (input3 == on && input2 == off) || (input3 == on && input4 == off) ||
+                (input4 == on && input1 == off) || (input4 == on && input2 == off) || (input4 == on && input3 == off))
+                lvl.Blockchange(x, (ushort)(y + 1), z, on);
+            else
+                lvl.Blockchange(x, (ushort)(y + 1), z, off);
         }
     }
 }
