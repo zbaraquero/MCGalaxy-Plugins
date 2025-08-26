@@ -136,13 +136,18 @@ namespace MCGalaxy
             BlockID input3 = lvl.GetBlock(x, y, (ushort)(z - 1));
             BlockID input4 = lvl.GetBlock(x, y, (ushort)(z + 1));
 
-            if ((input1 == on && input2 == off) || (input1 == on && input3 == off) || (input1 == on && input4 == off) ||
-                (input2 == on && input1 == off) || (input2 == on && input3 == off) || (input2 == on && input4 == off) ||
-                (input3 == on && input1 == off) || (input3 == on && input2 == off) || (input3 == on && input4 == off) ||
-                (input4 == on && input1 == off) || (input4 == on && input2 == off) || (input4 == on && input3 == off))
+            if ((input1 == on && input2 != on && input3 != on && input4 != on) ||
+                (input1 != on && input2 == on && input3 != on && input4 != on) ||
+                (input1 != on && input2 != on && input3 == on && input4 != on) ||
+                (input1 != on && input2 != on && input3 != on && input4 == on))
                 lvl.Blockchange(x, (ushort)(y + 1), z, on);
             else
                 lvl.Blockchange(x, (ushort)(y + 1), z, off);
         }
     }
 }
+
+//((input1 == on && input2 == off) || (input1 == on && input3 == off) || (input1 == on && input4 == off) ||
+//                (input2 == on && input1 == off) || (input2 == on && input3 == off) || (input2 == on && input4 == off) ||
+//                (input3 == on && input1 == off) || (input3 == on && input2 == off) || (input3 == on && input4 == off) ||
+//                (input4 == on && input1 == off) || (input4 == on && input2 == off) || (input4 == on && input3 == off))
