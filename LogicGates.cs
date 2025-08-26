@@ -14,12 +14,12 @@ namespace MCGalaxy
 
         static BlockID on = 155;    // oDoor_Green
         static BlockID off = 177;    // oDoor_Red
-        static BlockID NOTGateBlock = 31;
-        static BlockID ANDGateBlock = 32;
-        static BlockID ORGateBlock = 33;
-        static BlockID NANDGateBlock = 34;
-        static BlockID NORGateBlock = 35;
-        static BlockID XORGateBlock = 36;
+        static BlockID NOTGate = 31;
+        static BlockID ANDGate = 32;
+        static BlockID NANDGate = 33;
+        static BlockID ORGate = 34;
+        static BlockID NORGate = 35;
+        static BlockID XORGate = 36;
 
         public override void Load(bool startup)
         {
@@ -33,29 +33,13 @@ namespace MCGalaxy
 
         static void OnBlockHandlersUpdated(Level lvl, BlockID block)
         {
-            switch (block)
-            {
-                case 31:
-                    lvl.PhysicsHandlers[NOTGateBlock] = TriggerNOT;
-                    break;
-                case 32:
-                    lvl.PhysicsHandlers[ANDGateBlock] = TriggerAND;
-                    break;
-                case 33:
-                    lvl.PhysicsHandlers[ORGateBlock] = TriggerOR;
-                    break;
-                case 34:
-                    lvl.PhysicsHandlers[NANDGateBlock] = TriggerNAND;
-                    break;
-                case 35:
-                    lvl.PhysicsHandlers[NORGateBlock] = TriggerNOR;
-                    break;
-                case 36:
-                    lvl.PhysicsHandlers[XORGateBlock] = TriggerXOR;
-                    break;
-                default:
-                    return;
-            }
+            if (block == 31) lvl.PhysicsHandlers[NOTGate] = TriggerNOT;
+            else if (block == 32) lvl.PhysicsHandlers[ANDGate] = TriggerAND;
+            else if (block == 33) lvl.PhysicsHandlers[NANDGate] = TriggerNAND;
+            else if (block == 34) lvl.PhysicsHandlers[ORGate] = TriggerOR;
+            else if (block == 35) lvl.PhysicsHandlers[NORGate] = TriggerNOR;
+            else if (block == 36) lvl.PhysicsHandlers[XORGate] = TriggerXOR;
+            else return;
         }
 
         static void TriggerNOT(Level lvl, ref PhysInfo C)
@@ -86,20 +70,6 @@ namespace MCGalaxy
                 lvl.Blockchange(x, (ushort)(y + 1), z, on);
         }
 
-        static void TriggerOR(Level lvl, ref PhysInfo C)
-        {
-            ushort x = C.X, y = C.Y, z = C.Z;
-            BlockID input1 = lvl.GetBlock((ushort)(x - 1), y, z);
-            BlockID input2 = lvl.GetBlock((ushort)(x + 1), y, z);
-            BlockID input3 = lvl.GetBlock(x, y, (ushort)(z - 1));
-            BlockID input4 = lvl.GetBlock(x, y, (ushort)(z + 1));
-
-            if (input1 == on || input2 == on || input3 == on || input4 == on)
-                lvl.Blockchange(x, (ushort)(y + 1), z, on);
-            else
-                lvl.Blockchange(x, (ushort)(y + 1), z, off);
-        }
-
         static void TriggerNAND(Level lvl, ref PhysInfo C)
         {
             ushort x = C.X, y = C.Y, z = C.Z;
@@ -112,6 +82,20 @@ namespace MCGalaxy
                 lvl.Blockchange(x, (ushort)(y + 1), z, off);
             else
                 lvl.Blockchange(x, (ushort)(y + 1), z, on);
+        }
+
+        static void TriggerOR(Level lvl, ref PhysInfo C)
+        {
+            ushort x = C.X, y = C.Y, z = C.Z;
+            BlockID input1 = lvl.GetBlock((ushort)(x - 1), y, z);
+            BlockID input2 = lvl.GetBlock((ushort)(x + 1), y, z);
+            BlockID input3 = lvl.GetBlock(x, y, (ushort)(z - 1));
+            BlockID input4 = lvl.GetBlock(x, y, (ushort)(z + 1));
+
+            if (input1 == on || input2 == on || input3 == on || input4 == on)
+                lvl.Blockchange(x, (ushort)(y + 1), z, on);
+            else
+                lvl.Blockchange(x, (ushort)(y + 1), z, off);
         }
 
         static void TriggerNOR(Level lvl, ref PhysInfo C)
@@ -146,8 +130,3 @@ namespace MCGalaxy
         }
     }
 }
-
-//((input1 == on && input2 == off) || (input1 == on && input3 == off) || (input1 == on && input4 == off) ||
-//                (input2 == on && input1 == off) || (input2 == on && input3 == off) || (input2 == on && input4 == off) ||
-//                (input3 == on && input1 == off) || (input3 == on && input2 == off) || (input3 == on && input4 == off) ||
-//                (input4 == on && input1 == off) || (input4 == on && input2 == off) || (input4 == on && input3 == off))
