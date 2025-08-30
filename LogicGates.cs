@@ -38,7 +38,7 @@ namespace MCGalaxy
                 {
                     RefreshPluginBlocks(lvl);
                     lvl.Config.PhysicsSpeed = 5;
-                    lvl.PhysicsHandlers[NOT] = TriggerNOT;
+                    lvl.PhysicsHandlers[NOT] = TriggerNAND;
                     lvl.PhysicsHandlers[AND] = TriggerAND;
                     lvl.PhysicsHandlers[NAND] = TriggerNAND;
                     lvl.PhysicsHandlers[OR] = TriggerOR;
@@ -73,7 +73,7 @@ namespace MCGalaxy
 
         static void OnBlockHandlersUpdated(Level lvl, BlockID block)
         {
-            if (block == NOT) lvl.PhysicsHandlers[block] = TriggerNOT;
+            if (block == NOT) lvl.PhysicsHandlers[block] = TriggerNAND;
             else if (block == AND) lvl.PhysicsHandlers[block] = TriggerAND;
             else if (block == NAND) lvl.PhysicsHandlers[block] = TriggerNAND;
             else if (block == OR) lvl.PhysicsHandlers[block] = TriggerOR;
@@ -101,29 +101,12 @@ namespace MCGalaxy
             }
         }
 
-        static void TriggerNOT(Level lvl, ref PhysInfo C)
-        {
-            ushort x = C.X, y = C.Y, z = C.Z;
-            BlockID input1 = lvl.FastGetBlock((ushort)(x - 1), y, z);
-            BlockID input2 = lvl.FastGetBlock((ushort)(x + 1), y, z);
-            BlockID input3 = lvl.FastGetBlock(x, y, (ushort)(z - 1));
-            BlockID input4 = lvl.FastGetBlock(x, y, (ushort)(z + 1));
-
-            if (input1 == LOW || input2 == LOW || input3 == LOW || input4 == LOW)
-                lvl.Blockchange(x, (ushort)(y + 1), z, HIGH);
-            else
-                lvl.Blockchange(x, (ushort)(y + 1), z, LOW);
-        }
-
         static void TriggerAND(Level lvl, ref PhysInfo C)
         {
             ushort x = C.X, y = C.Y, z = C.Z;
-            BlockID input1 = lvl.FastGetBlock((ushort)(x - 1), y, z);
-            BlockID input2 = lvl.FastGetBlock((ushort)(x + 1), y, z);
-            BlockID input3 = lvl.FastGetBlock(x, y, (ushort)(z - 1));
-            BlockID input4 = lvl.FastGetBlock(x, y, (ushort)(z + 1));
+            BlockID[] inputs = ReadInputs(lvl, x, y, z);
 
-            if (input1 == LOW || input2 == LOW || input3 == LOW || input4 == LOW)
+            if (inputs[0] == LOW || inputs[1] == LOW || inputs[2] == LOW || inputs[3] == LOW)
                 lvl.Blockchange(x, (ushort)(y + 1), z, LOW);
             else
                 lvl.Blockchange(x, (ushort)(y + 1), z, HIGH);
@@ -132,26 +115,20 @@ namespace MCGalaxy
         static void TriggerNAND(Level lvl, ref PhysInfo C)
         {
             ushort x = C.X, y = C.Y, z = C.Z;
-            BlockID input1 = lvl.FastGetBlock((ushort)(x - 1), y, z);
-            BlockID input2 = lvl.FastGetBlock((ushort)(x + 1), y, z);
-            BlockID input3 = lvl.FastGetBlock(x, y, (ushort)(z - 1));
-            BlockID input4 = lvl.FastGetBlock(x, y, (ushort)(z + 1));
+            BlockID[] inputs = ReadInputs(lvl, x, y, z);
 
-            if (!(input1 == LOW || input2 == LOW || input3 == LOW || input4 == LOW))
-                lvl.Blockchange(x, (ushort)(y + 1), z, LOW);
-            else
+            if (inputs[0] == LOW || inputs[1] == LOW || inputs[2] == LOW || inputs[3] == LOW)
                 lvl.Blockchange(x, (ushort)(y + 1), z, HIGH);
+            else
+                lvl.Blockchange(x, (ushort)(y + 1), z, LOW);
         }
 
         static void TriggerOR(Level lvl, ref PhysInfo C)
         {
             ushort x = C.X, y = C.Y, z = C.Z;
-            BlockID input1 = lvl.FastGetBlock((ushort)(x - 1), y, z);
-            BlockID input2 = lvl.FastGetBlock((ushort)(x + 1), y, z);
-            BlockID input3 = lvl.FastGetBlock(x, y, (ushort)(z - 1));
-            BlockID input4 = lvl.FastGetBlock(x, y, (ushort)(z + 1));
+            BlockID[] inputs = ReadInputs(lvl, x, y, z);
 
-            if (input1 == HIGH || input2 == HIGH || input3 == HIGH || input4 == HIGH)
+            if (inputs[0] == HIGH || inputs[1] == HIGH || inputs[2] == HIGH || inputs[3] == HIGH)
                 lvl.Blockchange(x, (ushort)(y + 1), z, HIGH);
             else
                 lvl.Blockchange(x, (ushort)(y + 1), z, LOW);
@@ -160,32 +137,38 @@ namespace MCGalaxy
         static void TriggerNOR(Level lvl, ref PhysInfo C)
         {
             ushort x = C.X, y = C.Y, z = C.Z;
-            BlockID input1 = lvl.FastGetBlock((ushort)(x - 1), y, z);
-            BlockID input2 = lvl.FastGetBlock((ushort)(x + 1), y, z);
-            BlockID input3 = lvl.FastGetBlock(x, y, (ushort)(z - 1));
-            BlockID input4 = lvl.FastGetBlock(x, y, (ushort)(z + 1));
+            BlockID[] inputs = ReadInputs(lvl, x, y, z);
 
-            if (!(input1 == HIGH || input2 == HIGH || input3 == HIGH || input4 == HIGH))
-                lvl.Blockchange(x, (ushort)(y + 1), z, HIGH);
-            else
+            if (inputs[0] == HIGH || inputs[1] == HIGH || inputs[2] == HIGH || inputs[3] == HIGH)
                 lvl.Blockchange(x, (ushort)(y + 1), z, LOW);
+            else
+                lvl.Blockchange(x, (ushort)(y + 1), z, HIGH);
         }
 
         static void TriggerXOR(Level lvl, ref PhysInfo C)
         {
             ushort x = C.X, y = C.Y, z = C.Z;
-            BlockID input1 = lvl.FastGetBlock((ushort)(x - 1), y, z);
-            BlockID input2 = lvl.FastGetBlock((ushort)(x + 1), y, z);
-            BlockID input3 = lvl.FastGetBlock(x, y, (ushort)(z - 1));
-            BlockID input4 = lvl.FastGetBlock(x, y, (ushort)(z + 1));
+            BlockID[] inputs = ReadInputs(lvl, x, y, z);
+            ushort highCount = 0;
 
-            if ((input1 == HIGH && input2 != HIGH && input3 != HIGH && input4 != HIGH) ||
-                (input1 != HIGH && input2 == HIGH && input3 != HIGH && input4 != HIGH) ||
-                (input1 != HIGH && input2 != HIGH && input3 == HIGH && input4 != HIGH) ||
-                (input1 != HIGH && input2 != HIGH && input3 != HIGH && input4 == HIGH))
+            foreach (BlockID input in inputs)
+                if (input == HIGH) highCount++;
+
+            if (highCount % 2 == 1)
                 lvl.Blockchange(x, (ushort)(y + 1), z, HIGH);
             else
                 lvl.Blockchange(x, (ushort)(y + 1), z, LOW);
+        }
+
+        static BlockID[] ReadInputs(Level lvl, ushort x, ushort y, ushort z)
+        {
+            return new BlockID[]
+            {
+                lvl.FastGetBlock((ushort)(x - 1), y, z),
+                lvl.FastGetBlock((ushort)(x + 1), y, z),
+                lvl.FastGetBlock(x, y, (ushort)(z - 1)),
+                lvl.FastGetBlock(x, y, (ushort)(z + 1)),
+            };
         }
 
         void RefreshPluginBlocks(Level lvl)
