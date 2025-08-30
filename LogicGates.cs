@@ -56,7 +56,6 @@ namespace MCGalaxy
                 if (logicGatesLevels.Contains(lvl.name))
                 {
                     lvl.Config.PhysicsSpeed = 250;
-                    lvl.PhysicsHandlers[NOT] = null;
                     lvl.PhysicsHandlers[AND] = null;
                     lvl.PhysicsHandlers[NAND] = null;
                     lvl.PhysicsHandlers[OR] = null;
