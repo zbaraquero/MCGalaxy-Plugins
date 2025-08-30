@@ -73,7 +73,7 @@ namespace MCGalaxy
 
         static void OnBlockHandlersUpdated(Level lvl, BlockID block)
         {
-            if (block == NOT) lvl.PhysicsHandlers[block] = TriggerNOT;
+            if (block == NOT) lvl.PhysicsHandlers[block] = TriggerNAND; // could use TriggerNOR
             else if (block == AND) lvl.PhysicsHandlers[block] = TriggerAND;
             else if (block == NAND) lvl.PhysicsHandlers[block] = TriggerNAND;
             else if (block == OR) lvl.PhysicsHandlers[block] = TriggerOR;
