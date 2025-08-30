@@ -22,8 +22,7 @@ namespace MCGalaxy
 
         static BlockID HIGH = 155;    // oDoor_Green
         static BlockID LOW = 177;    // oDoor_Red
-        static BlockID CLK = 30;
-        static BlockID NOT = 31;
+        static BlockID CLK = 31;
         static BlockID AND = 32;
         static BlockID NAND = 33;
         static BlockID OR = 34;
@@ -38,7 +37,6 @@ namespace MCGalaxy
                 {
                     RefreshPluginBlocks(lvl);
                     lvl.Config.PhysicsSpeed = 5;
-                    lvl.PhysicsHandlers[NOT] = TriggerNAND; // could use TriggerNOR
                     lvl.PhysicsHandlers[AND] = TriggerAND;
                     lvl.PhysicsHandlers[NAND] = TriggerNAND;
                     lvl.PhysicsHandlers[OR] = TriggerOR;
@@ -73,8 +71,7 @@ namespace MCGalaxy
 
         static void OnBlockHandlersUpdated(Level lvl, BlockID block)
         {
-            if (block == NOT) lvl.PhysicsHandlers[block] = TriggerNAND; // could use TriggerNOR
-            else if (block == AND) lvl.PhysicsHandlers[block] = TriggerAND;
+            if (block == AND) lvl.PhysicsHandlers[block] = TriggerAND;
             else if (block == NAND) lvl.PhysicsHandlers[block] = TriggerNAND;
             else if (block == OR) lvl.PhysicsHandlers[block] = TriggerOR;
             else if (block == NOR) lvl.PhysicsHandlers[block] = TriggerNOR;
@@ -179,8 +176,7 @@ namespace MCGalaxy
                     {
                         BlockID b = lvl.FastGetBlock(x, y, z);
 
-                        if (b == NOT || b == AND || b == NAND ||
-                            b == OR || b == NOR || b == XOR)
+                        if (b == AND || b == NAND || b == OR || b == NOR || b == XOR)
                             lvl.AddCheck(lvl.PosToInt(x, y, z));
                     }
         }
